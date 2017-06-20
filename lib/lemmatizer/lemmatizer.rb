@@ -23,31 +23,31 @@ module Lemmatizer
 
     MORPHOLOGICAL_SUBSTITUTIONS = {
       :noun => [
-        ['s',    ''   ],
-        ['ses',  's'  ],
-        ['ves',  'f'  ],
-        ['xes',  'x'  ],
-        ['zes',  'z'  ],
-        ['ches', 'ch' ],
-        ['shes', 'sh' ],
-        ['men',  'man'],
-        ['ies',  'y'  ]
+        [/(.+[^s])s\z/, '\1'   ],
+        [/(.+)ses\z/,   '\1s'  ],
+        [/(.+)ves\z/,   '\1f'  ],
+        [/(.+)xes\z/,   '\1x'  ],
+        [/(.+)zes\z/,   '\1z'  ],
+        [/(.+)ches\z/,  '\1ch' ],
+        [/(.+)shes\z/,  '\1sh' ],
+        [/(.+)men\z/,   '\1man'],
+        [/(.+)ies\z/,   '\1y'  ]
       ],
       :verb => [
-        ['s',   '' ],
-        ['ies', 'y'],
-        ['es',  'e'],
-        ['es',  '' ],
-        ['ed',  'e'],
-        ['ed',  '' ],
-        ['ing', 'e'],
-        ['ing', '' ]
+        [/(.+)s\z/,   '\1' ],
+        [/(.+)ies\z/, '\1y'],
+        [/(.+)es\z/,  '\1e'],
+        [/(.+)es\z/,  '\1' ],
+        [/(.+)ed\z/,  '\1e'],
+        [/(.+)ed\z/,  '\1' ],
+        [/(.+)ing\z/, '\1e'],
+        [/(.+)ing\z/, '\1' ]
       ],
       :adj =>  [
-        ['er',  '' ],
-        ['est', '' ],
-        ['er',  'e'],
-        ['est', 'e']
+        [/(.+)er\z/,  '\1' ],
+        [/(.+)est\z/, '\1' ],
+        [/(.+)er\z/,  '\1e'],
+        [/(.+)est\z/, '\1e']
       ],
       :adv =>  [
       ]
@@ -127,8 +127,8 @@ module Lemmatizer
 
       MORPHOLOGICAL_SUBSTITUTIONS[pos].each do |entry|
         old, new = *entry
-        if form.endwith(old)
-          each_substitutions(form[0, form.length - old.length] + new, pos) do |x|
+        unless (form =~ old).nil?
+          each_substitutions(form.gsub(old,new), pos) do |x|
             yield x
           end
         end
